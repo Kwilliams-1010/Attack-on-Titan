@@ -45,6 +45,9 @@ public final class MasteryCommand {
                                                 .executes(c -> setXp(c, true))))))
                 .then(class_2170.method_9247("founding").requires(s -> s.method_9259(2))
                         .then(class_2170.method_9247("release").executes(MasteryCommand::foundingRelease))
+                        .then(class_2170.method_9247("model")
+                                .then(class_2170.method_9247("original").executes(c -> foundingModel(c, 1)))
+                                .then(class_2170.method_9247("springdaot").executes(c -> foundingModel(c, 0))))
                         .then(class_2170.method_9247("chance")
                                 .then(class_2170.method_9244("percent", IntegerArgumentType.integer(0, 100))
                                         .executes(MasteryCommand::foundingChance)))
@@ -109,6 +112,17 @@ public final class MasteryCommand {
         server.method_3734().method_44252(c.getSource().method_9217().method_9206(2), "scoreboard players set #claimed founding.cfg 0");
         server.method_3734().method_44252(c.getSource().method_9217().method_9206(2), "tag @a remove " + titanmastery.founding.FounderManager.ROLLED_TAG);
         c.getSource().method_9226(() -> class_2561.method_43470("The Founding Titan is unclaimed. A royal-blooded player may be born with it."), true);
+        return 1;
+    }
+
+    private static int foundingModel(CommandContext<class_2168> c, int original) {
+        c.getSource().method_9211().method_3734().method_44252(c.getSource().method_9217().method_9206(2),
+                "scoreboard players set #original_model founding.cfg " + original);
+        boolean spring = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("springdaot");
+        c.getSource().method_9226(() -> class_2561.method_43470(original == 1
+                ? "The Founder now transforms into the Titan Mastery Founding Titan."
+                : spring ? "The Founder now transforms into SpringDAOT's Ymir Founding Titan."
+                         : "SpringDAOT isn't installed, so the Titan Mastery model is used."), true);
         return 1;
     }
 

@@ -9,7 +9,8 @@
     "ShifterAbilityMixin",
     "CartAttackMixin",
     "FounderRiderMixin",
-    "FounderDismountMixin"
+    "FounderDismountMixin",
+    "FrozenTickMixin"
   ],
   "client": [
     "client.KeyboardInputMixin"

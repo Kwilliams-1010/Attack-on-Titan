@@ -52,6 +52,10 @@ public final class MasteryAbilities {
             deny(player, s, now, "The rage won't listen.");
             return;
         }
+        if (s.type == TitanType.FOUNDING && !titanmastery.founding.FounderManager.isFounder(player)) {
+            deny(player, s, now, "Only the one true Founder can command the Paths.");
+            return;
+        }
         if (action == ACTION_RUMBLING) rumbling(player, s, now);
         else if (action == ACTION_ABILITY) useAbility(player, s, now);
         else if (action == ACTION_FORM) toggleForm(player, s, now);

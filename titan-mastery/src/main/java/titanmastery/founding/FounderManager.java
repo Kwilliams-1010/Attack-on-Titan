@@ -51,6 +51,23 @@ public final class FounderManager {
         return player.method_5752().contains(HOLDER_TAG);
     }
 
+    /** The Titan this Founder is shifted into: our Founding Titan or SpringDAOT's Ymir. */
+    public static class_1297 founderBody(class_1657 player) {
+        FoundingTitanEntity ours = titanOf(player);
+        if (ours != null) return ours;
+        class_1297 v = TitanHooks.shiftedTitan(player);
+        return v != null && titanmastery.TitanType.isSpringFounding(v) ? v : null;
+    }
+
+    public static final class_2960 SPRING_YMIR = class_2960.method_60655("springdaot", "ymirfounding");
+
+    /** SpringDAOT installed and not switched off with /mastery founding model original. */
+    public static boolean useSpringYmir(MinecraftServer server) {
+        return net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("springdaot")
+                && net.minecraft.class_7923.field_41177.method_10250(SPRING_YMIR)
+                && cfg(server, "#original_model") == 0;
+    }
+
     public static FoundingTitanEntity titanOf(class_1657 player) {
         if (player.method_5854() instanceof FoundingTitanEntity t && player.method_5667().equals(t.getOwner())) return t;
         return null;
@@ -59,7 +76,7 @@ public final class FounderManager {
     // ------------------------------------------------------------------ the O key
 
     public static void toggleShift(class_3222 player) {
-        if (titanOf(player) != null) revert(player, false);
+        if (founderBody(player) != null) revert(player, false);
         else shift(player);
     }
 
@@ -80,6 +97,7 @@ public final class FounderManager {
         }
 
         class_3218 world = player.method_51469();
+        if (useSpringYmir(player.method_5682()) && shiftIntoSpringYmir(player, world)) return;
         FoundingTitanEntity titan = TitanMastery.FOUNDING_TITAN.method_5883(world); // EntityType.create
         if (titan == null) return;
         titan.method_5808(player.method_23317(), player.method_23318(), player.method_23321(), player.method_36454(), 0f); // refreshPositionAndAngles
@@ -121,16 +139,37 @@ public final class FounderManager {
                 class_3417.field_14865, class_3419.field_15248, 8.0f, 0.7f); // lightning thunder
     }
 
+    /** SpringDAOT's Ymir Founding Titan, spawned the same way Danny's own shifting does it. */
+    private static boolean shiftIntoSpringYmir(class_3222 player, class_3218 world) {
+        try {
+            class_1297 e = net.minecraft.class_7923.field_41177.method_10223(SPRING_YMIR).method_5883(world);
+            if (!(e instanceof daot.AttackTitanEntity ymir)) return false;
+            ymir.method_5808(player.method_23317(), player.method_23318(), player.method_23321(), player.method_36454(), 0f);
+            world.method_8649(ymir);
+            ymir.onPlayerShift(player);
+            if (TitanHooks.shiftedTitan(player) == ymir) return true;
+            ymir.method_31472();
+        } catch (Throwable t) {
+            TitanMastery.LOG.warn("Couldn't shift into SpringDAOT's Ymir Founding Titan, using the Titan Mastery model instead", t);
+        }
+        return false;
+    }
+
     /** Leave the Titan. {@code forced} skips the rage check (rage burning out, power lost). */
     public static void revert(class_3222 player, boolean forced) {
-        FoundingTitanEntity titan = titanOf(player);
-        if (titan == null) return;
+        class_1297 body = founderBody(player);
+        if (body == null) return;
         if (!forced) {
             Session s = MasteryManager.session(player);
             if (s != null && s.inFury) {
                 player.method_7353(class_2561.method_43470("The Titan won't let you go!").method_27692(class_124.field_1061), true);
                 return;
             }
+            if (titanmastery.MasteryCombat.isCommanded(player)) return;
+        }
+        if (!(body instanceof FoundingTitanEntity titan)) {
+            TitanHooks.forceRevert(body, player); // SpringDAOT's Ymir leaves through Danny's own dismount
+            return;
         }
         player.method_5848(); // stopRiding
         cleanupRider(player);
@@ -170,6 +209,10 @@ public final class FounderManager {
 
     public static void tick(MinecraftServer server, long now) {
         for (class_3222 player : MasteryManager.players(server)) {
+            class_1297 body = founderBody(player);
+            if (body != null && !(body instanceof FoundingTitanEntity)) {
+                if (!isFounder(player) && !player.method_5752().contains("ymirfounding")) revert(player, true);
+            }
             FoundingTitanEntity titan = titanOf(player);
             if (titan != null) {
                 if (!isFounder(player)) revert(player, true); // the power passed to someone else

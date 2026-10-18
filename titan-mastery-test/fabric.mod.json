@@ -1,0 +1,2 @@
+{"schemaVersion":1,"id":"tmtest","version":"1.0.0","name":"Titan Mastery Test Harness","environment":"server",
+ "entrypoints":{"main":["tmtest.TitanMasteryTest"]},"depends":{"titanmastery":"*","dannys-aot":"*"}}
