@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:command",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:honey_bottle",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "target": "item_name",
+              "name": {"text": "Founding Titan Serum", "color": "gold"}
+            },
+            {
+              "function": "minecraft:set_lore",
+              "mode": "replace_all",
+              "lore": [
+                {"text": "Royal spinal fluid. Drink to inherit", "color": "gray", "italic": true},
+                {"text": "the power of the Founding Titan.", "color": "gray", "italic": true}
+              ]
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{founding_serum:1b}"
+            },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:enchantment_glint_override": true,
+                "minecraft:rarity": "epic",
+                "minecraft:max_stack_size": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -16,7 +16,7 @@ import titanmastery.TitanHooks;
 import titanmastery.TitanMastery;
 
 /**
- * Client side: the G / H keys, and the rage that takes your movement and camera.
+ * Client side: the J / U keys, and the rage that takes your movement and camera.
  * Yarn: class_310 MinecraftClient, class_746 ClientPlayerEntity, class_744 Input, class_304 KeyBinding.
  */
 public class TitanMasteryClient implements ClientModInitializer {
@@ -28,9 +28,9 @@ public class TitanMasteryClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         abilityKey = KeyBindingHelper.registerKeyBinding(new class_304("key.titanmastery.ability",
-                class_3675.class_307.field_1668, 71, "category.titanmastery")); // G
+                class_3675.class_307.field_1668, 74, "category.titanmastery")); // J (G/H are Danny's ODM hooks)
         formKey = KeyBindingHelper.registerKeyBinding(new class_304("key.titanmastery.form",
-                class_3675.class_307.field_1668, 72, "category.titanmastery")); // H
+                class_3675.class_307.field_1668, 85, "category.titanmastery")); // U
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             class_746 player = client.field_1724;

@@ -22,7 +22,7 @@ import net.minecraft.class_3419;
 import java.util.List;
 
 /**
- * Mastery abilities (G) and forms (H) for each of the nine Titans.
+ * Mastery abilities (J) and forms (U) for each of the nine Titans.
  * Yarn: class_243 Vec3d, class_238 Box, class_2398 ParticleTypes, class_3417 SoundEvents, class_1308 MobEntity.
  */
 public final class MasteryAbilities {

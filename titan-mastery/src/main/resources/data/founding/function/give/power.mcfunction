@@ -1,0 +1,1 @@
+function founding:power/inherit

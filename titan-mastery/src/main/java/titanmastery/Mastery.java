@@ -93,8 +93,8 @@ public final class Mastery {
         return switch (stage) {
             case 1 -> "You can steer the Titan now, but rage can still take over.";
             case 2 -> "Danny's Titan abilities unlocked. Rage rarely takes over.";
-            case 3 -> "Full control. Mastery ability unlocked: " + type.abilityName + " (G).";
-            case 4 -> "Mastery form unlocked: " + type.formName + " (H).";
+            case 3 -> "Full control. Mastery ability unlocked: " + type.abilityName + " (J).";
+            case 4 -> "Mastery form unlocked: " + type.formName + " (U).";
             case 5 -> "Perfected. Your form lasts twice as long and your Titan is at its peak.";
             default -> "";
         };

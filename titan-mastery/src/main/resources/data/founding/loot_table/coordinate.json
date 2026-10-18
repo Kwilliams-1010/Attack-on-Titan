@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:command",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:carrot_on_a_stick",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "target": "item_name",
+              "name": {"text": "The Coordinate", "color": "gold"}
+            },
+            {
+              "function": "minecraft:set_lore",
+              "mode": "replace_all",
+              "lore": [
+                {"text": "The power of the Founding Titan.", "color": "gray", "italic": true},
+                {"text": "Right-click: use ability", "color": "yellow", "italic": false},
+                {"text": "Sneak + right-click: switch ability", "color": "yellow", "italic": false}
+              ]
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{founding_coord:1b}"
+            },
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:enchantment_glint_override": true,
+                "minecraft:unbreakable": {"show_in_tooltip": false},
+                "minecraft:custom_model_data": 7701,
+                "minecraft:rarity": "epic"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

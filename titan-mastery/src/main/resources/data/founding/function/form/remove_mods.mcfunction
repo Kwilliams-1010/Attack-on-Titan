@@ -1,0 +1,10 @@
+attribute @s minecraft:generic.scale modifier remove founding:titan_scale
+attribute @s minecraft:generic.max_health modifier remove founding:titan_health
+attribute @s minecraft:generic.attack_damage modifier remove founding:titan_damage
+attribute @s minecraft:generic.armor modifier remove founding:titan_armor
+attribute @s minecraft:generic.knockback_resistance modifier remove founding:titan_kb
+attribute @s minecraft:generic.step_height modifier remove founding:titan_step
+attribute @s minecraft:generic.safe_fall_distance modifier remove founding:titan_fall
+attribute @s minecraft:generic.movement_speed modifier remove founding:titan_speed
+attribute @s minecraft:player.entity_interaction_range modifier remove founding:titan_reach
+attribute @s minecraft:player.block_interaction_range modifier remove founding:titan_breach

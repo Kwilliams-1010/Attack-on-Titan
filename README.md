@@ -6,16 +6,22 @@ An Attack on Titan modpack for **Minecraft 1.21.1 (Fabric)**, built around [Dann
 |---|---|
 | [`titan-mastery/`](titan-mastery) | **Titan Mastery**, a Fabric add-on mod for Danny's AoT. New shifters can't control their Titan and it rages on its own; control grows the more you use each Titan, unlocking a mastery ability and form for all nine. |
 | [`founding-titan-datapack/`](founding-titan-datapack) | **Founding Titan** datapack: the Coordinate, Titan Form, Kneel and the Rumbling. |
-| [`releases/`](releases) | Ready-to-use builds: `titanmastery-1.0.0.jar` and `founding-titan.zip`. |
+| [`modpack/`](modpack) | The CurseForge modpack manifest. |
+| [`releases/`](releases) | Ready-to-use files: **`AttackOnTitan-BeyondTheWalls-1.1.0.zip`** (the modpack), `titanmastery-1.1.0.jar`, and the standalone `founding-titan.zip`. |
 
-## Install (CurseForge app)
+## Install (one click, CurseForge app)
 
-1. **Create Custom Profile** → Fabric, Minecraft **1.21.1**. Set memory to 8 GB.
-2. Add the mods below with **Add More Content**.
-3. Drop `releases/titanmastery-1.0.0.jar` into the profile's `mods` folder (**⋯ → Open Folder**).
-4. Optional: put `releases/founding-titan.zip` in `saves/<world>/datapacks`.
+1. Download [`releases/AttackOnTitan-BeyondTheWalls-1.1.0.zip`](releases/AttackOnTitan-BeyondTheWalls-1.1.0.zip).
+2. In CurseForge: **Minecraft → Create Custom Profile → Import** → pick the zip.
+3. Set memory to **6–8 GB** (**Settings → Minecraft → Java Settings**) and play.
 
-### Mod list
+The modpack downloads Danny's AoT and its libraries from CurseForge unchanged, adds performance and quality-of-life mods (Sodium, Lithium, FerriteCore, Entity Culling, Mod Menu, Jade, JEI), and includes Titan Mastery with the **Founding Titan datapack built in**: it's active in every world, with nothing to install separately.
+
+**Keys:** Titan Mastery uses **J** (mastery ability) and **U** (mastery form), chosen so they don't clash with Danny's controls (G/H are the ODM hooks). Rebind them under *Controls → Titan Mastery*.
+
+### Optional extras
+
+The modpack keeps to a lean, tested core. These fit well on top (add them with **Add More Content**):
 
 **Core**: Danny's AoT · Fabric API · GeckoLib · Player Animation Library · AAA Particles · Titan Mastery (this repo)
 
@@ -38,13 +44,13 @@ Each Titan has its own mastery, earned by using it: **1 XP per second shifted, 1
 | Feral | 0 | None. Every shift the Titan rampages for 30 s, attacking the nearest anything (friends too), dragging your camera, refusing to revert, then collapses and ejects you exhausted. |
 | Unstable | 200 | You steer, but rage can take over on shifting (40%) or at low health. Danny's Titan abilities stay locked. |
 | Awakened | 600 | Abilities unlocked; rage is rare. |
-| Disciplined | 1500 | Full control. **Mastery ability (G).** |
-| Mastered | 3000 | **Mastery form (H).** |
+| Disciplined | 1500 | Full control. **Mastery ability (J).** |
+| Mastered | 3000 | **Mastery form (U).** |
 | Perfected | 6000 | Forms last twice as long; peak stats. |
 
 Every stage also adds ~8% damage dealt, ~5% damage resisted, and Titan regeneration from Awakened on.
 
-| Titan | Ability (G) | Form (H) |
+| Titan | Ability (J) | Form (U) |
 |---|---|---|
 | Attack | War Cry | Hardened Attack Titan |
 | Colossal | Steam Burst | Scalding Steam |

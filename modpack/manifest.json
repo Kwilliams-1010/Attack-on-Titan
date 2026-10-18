@@ -1,0 +1,80 @@
+{
+  "minecraft": {
+    "version": "1.21.1",
+    "modLoaders": [
+      {
+        "id": "fabric-0.19.5",
+        "primary": true
+      }
+    ],
+    "recommendedRam": 6144
+  },
+  "manifestType": "minecraftModpack",
+  "manifestVersion": 1,
+  "name": "Attack on Titan: Beyond the Walls",
+  "version": "1.1.0",
+  "author": "KadenCraft1",
+  "files": [
+    {
+      "projectID": 1412946,
+      "fileID": 9042985,
+      "required": true
+    },
+    {
+      "projectID": 306612,
+      "fileID": 8786256,
+      "required": true
+    },
+    {
+      "projectID": 388172,
+      "fileID": 8893481,
+      "required": true
+    },
+    {
+      "projectID": 979809,
+      "fileID": 9101001,
+      "required": true
+    },
+    {
+      "projectID": 1283899,
+      "fileID": 8674788,
+      "required": true
+    },
+    {
+      "projectID": 394468,
+      "fileID": 8756581,
+      "required": true
+    },
+    {
+      "projectID": 360438,
+      "fileID": 8330364,
+      "required": true
+    },
+    {
+      "projectID": 459857,
+      "fileID": 7524152,
+      "required": true
+    },
+    {
+      "projectID": 448233,
+      "fileID": 9100282,
+      "required": true
+    },
+    {
+      "projectID": 308702,
+      "fileID": 8966434,
+      "required": true
+    },
+    {
+      "projectID": 324717,
+      "fileID": 8591528,
+      "required": true
+    },
+    {
+      "projectID": 238222,
+      "fileID": 9205120,
+      "required": true
+    }
+  ],
+  "overrides": "overrides"
+}
