@@ -41,22 +41,23 @@ public class TitanMasteryClient implements ClientModInitializer {
     }
 
     private static void send(class_746 player, int action) {
-        if (player == null || TitanHooks.shiftedTitan(player) == null) return;
+        if (player == null) return; // the server ignores it unless you're in a Titan (incl. Founding Titan Form)
         if (ClientPlayNetworking.canSend(MasteryPayload.ID)) ClientPlayNetworking.send(new MasteryPayload(action));
     }
 
     private static boolean raging(class_746 player) {
-        return player.method_6059(TitanMastery.FURY) && TitanHooks.shiftedTitan(player) != null;
+        return player.method_6059(TitanMastery.FURY); // only ever applied while in a Titan
     }
 
     private static boolean crystallized(class_746 player) {
-        return player.method_6059(TitanMastery.CRYSTALLIZED) && TitanHooks.shiftedTitan(player) != null;
+        return player.method_6059(TitanMastery.CRYSTALLIZED);
     }
 
     /** While raging, the Titan turns toward whatever is nearest; your mouse can't hold it. */
     private static void steerRage(class_746 player) {
         if (!raging(player)) return;
         class_1297 titan = TitanHooks.shiftedTitan(player);
+        if (titan == null) titan = player; // giant Founding Titan Form
         class_1297 target = TitanHooks.nearestTarget(titan, player, 48);
         float desired;
         if (target != null) {
@@ -89,7 +90,8 @@ public class TitanMasteryClient implements ClientModInitializer {
             input.field_3906 = false;
             input.field_3903 = false;  // sneaking can't be used to bail out
             class_1297 titan = TitanHooks.shiftedTitan(player);
-            input.field_3904 = titan != null && titan.field_5976; // jump when blocked by a wall
+            if (titan == null) titan = player;
+            input.field_3904 = titan.field_5976; // jump when blocked by a wall // jump when blocked by a wall
         } else if (crystallized(player)) {
             input.field_3905 = 0f;
             input.field_3907 = 0f;

@@ -1,5 +1,5 @@
 {
-  "required": true,
+  "required": false,
   "minVersion": "0.8",
   "package": "titanmastery.mixin",
   "compatibilityLevel": "JAVA_21",
@@ -13,6 +13,6 @@
     "client.KeyboardInputMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 0
   }
 }

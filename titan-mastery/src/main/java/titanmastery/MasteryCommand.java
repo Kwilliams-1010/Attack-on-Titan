@@ -19,6 +19,7 @@ import java.util.Collection;
  * /mastery show <player>           someone else's progress
  * /mastery set|add <players> <titan> <xp>   (ops)
  * /mastery fury <players> <seconds>         (ops) force a rampage for testing
+ * /mastery founding <players>               (ops) make them the Founding Titan, like /daot shifter set
  * Yarn: class_2168 ServerCommandSource, class_2170 CommandManager, class_2186 EntityArgumentType.
  */
 public final class MasteryCommand {
@@ -40,6 +41,9 @@ public final class MasteryCommand {
                                 .then(class_2170.method_9244("titan", StringArgumentType.word()).suggests(MasteryCommand::suggestTitans)
                                         .then(class_2170.method_9244("xp", IntegerArgumentType.integer(0))
                                                 .executes(c -> setXp(c, true))))))
+                .then(class_2170.method_9247("founding").requires(s -> s.method_9259(2))
+                        .then(class_2170.method_9244("players", class_2186.method_9308())
+                                .executes(MasteryCommand::founding)))
                 .then(class_2170.method_9247("fury").requires(s -> s.method_9259(2))
                         .then(class_2170.method_9244("players", class_2186.method_9308())
                                 .then(class_2170.method_9244("seconds", IntegerArgumentType.integer(1, 600))
@@ -80,6 +84,15 @@ public final class MasteryCommand {
         }
         c.getSource().method_9226(() -> class_2561.method_43470((add ? "Added " : "Set ") + xp + " " + type.display
                 + " mastery XP for " + players.size() + " player(s)."), true);
+        return players.size();
+    }
+
+    private static int founding(CommandContext<class_2168> c) throws CommandSyntaxException {
+        Collection<class_3222> players = class_2186.method_9312(c, "players");
+        // The Founding Titan has one holder at a time, so only the last player listed keeps it.
+        for (class_3222 p : players) TitanHooks.runFunction(p, "founding:power/inherit");
+        c.getSource().method_9226(() -> class_2561.method_43470("Granted the Founding Titan. Hold the Coordinate: right-click Titan Form to shift, sneak + right-click to switch powers.")
+                .method_27692(class_124.field_1065), true);
         return players.size();
     }
 

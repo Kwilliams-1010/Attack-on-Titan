@@ -48,6 +48,10 @@ public final class MasteryManager {
 
     /** The server player shifted into this titan, if any. */
     public static class_3222 riderOf(class_1297 titan) {
+        if (titan instanceof class_3222 p) { // our Founding Titan is the player's own giant body
+            Session s = SESSIONS.get(p.method_5667());
+            return (s != null && s.titan == p) ? p : null;
+        }
         if (!(titan instanceof ShifterTitan st) || st.getShifterUUID() == null) return null;
         MinecraftServer server = titan.method_5682();
         if (server == null) return null;
@@ -63,6 +67,10 @@ public final class MasteryManager {
             class_1297 titan = TitanHooks.shiftedTitan(player);
             Session s = SESSIONS.get(player.method_5667());
             TitanType type = titan == null ? null : TitanType.of(titan);
+            if (titan == null && TitanHooks.inFoundingForm(player)) {
+                titan = player;
+                type = TitanType.FOUNDING;
+            }
 
             if (s != null && (titan == null || s.titan != titan)) {
                 endSession(player, s);
@@ -105,6 +113,7 @@ public final class MasteryManager {
     }
 
     private static void endSession(class_3222 player, Session s) {
+        player.method_5738("tm_raging");
         player.method_6016(TitanMastery.FURY);        // removeStatusEffect
         player.method_6016(TitanMastery.CRYSTALLIZED);
         if (s.formActive) {
@@ -162,6 +171,7 @@ public final class MasteryManager {
         s.inFury = true;
         s.feralFury = feral;
         s.furyEnd = now + ticks;
+        player.method_5780("tm_raging"); // lets the Founding datapack refuse to revert or use the Coordinate
         player.method_6092(new class_1293(TitanMastery.FURY, ticks, 0, false, false, true));
         player.method_6092(new class_1293(class_1294.field_5916, 60, 0, false, false, false)); // brief nausea as the rage hits
         TitanHooks.roar(s.titan);
@@ -186,7 +196,10 @@ public final class MasteryManager {
             double reach = s.titan.method_17681() * 0.5 + 9.0; // getWidth
             double dx = target.method_23317() - s.titan.method_23317();
             double dz = target.method_23321() - s.titan.method_23321();
-            if (dx * dx + dz * dz <= reach * reach) TitanHooks.attack(s.titan);
+            if (dx * dx + dz * dz <= reach * reach) {
+                if (s.titan == player) TitanHooks.playerTitanStrike(player, target);
+                else TitanHooks.attack(s.titan);
+            }
         }
         if (s.shiftedTicks % 100 == 0 && player.method_59922().method_43057() < 0.35f) {
             TitanHooks.roar(s.titan);
@@ -201,6 +214,7 @@ public final class MasteryManager {
 
     private static void endFury(class_3222 player, Session s) {
         s.inFury = false;
+        player.method_5738("tm_raging");
         player.method_6016(TitanMastery.FURY);
         if (s.feralFury) {
             s.feralFury = false;
@@ -245,7 +259,7 @@ public final class MasteryManager {
         class_3222 player = null;
         if (attacker instanceof ShifterTitan) {
             player = riderOf(attacker);
-        } else if (attacker instanceof class_3222 p && TitanHooks.shiftedTitan(p) != null) {
+        } else if (attacker instanceof class_3222 p && session(p) != null) {
             player = p;
         }
         if (player == null) return;

@@ -42,8 +42,8 @@ public final class MasteryCombat {
         }
 
         // Defender reduction
-        if (victim instanceof ShifterTitan) {
-            class_3222 rider = MasteryManager.riderOf(victim);
+        class_3222 rider = MasteryManager.riderOf(victim);
+        if (rider != null) {
             Session def = MasteryManager.session(rider);
             if (def != null) {
                 long now = MasteryManager.now(rider.method_5682());
@@ -70,7 +70,7 @@ public final class MasteryCombat {
     private static Session sessionOfAttacker(class_1297 attacker) {
         if (attacker == null) return null;
         if (attacker instanceof ShifterTitan) return MasteryManager.session(MasteryManager.riderOf(attacker));
-        if (attacker instanceof class_3222 p && TitanHooks.shiftedTitan(p) != null) return MasteryManager.session(p);
+        if (attacker instanceof class_3222 p) return MasteryManager.session(p);
         return null;
     }
 
