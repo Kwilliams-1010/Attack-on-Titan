@@ -7,7 +7,9 @@
     "LivingEntityDamageMixin",
     "ShifterTitanMixin",
     "ShifterAbilityMixin",
-    "CartAttackMixin"
+    "CartAttackMixin",
+    "FounderRiderMixin",
+    "FounderDismountMixin"
   ],
   "client": [
     "client.KeyboardInputMixin"

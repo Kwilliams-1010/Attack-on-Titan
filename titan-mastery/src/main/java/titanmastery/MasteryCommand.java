@@ -20,6 +20,8 @@ import java.util.Collection;
  * /mastery set|add <players> <titan> <xp>   (ops)
  * /mastery fury <players> <seconds>         (ops) force a rampage for testing
  * /mastery founding <players>               (ops) make them the Founding Titan, like /daot shifter set
+ * /mastery founding release                 (ops) nobody holds it; the next royal-blooded newcomer can be born with it
+ * /mastery founding chance <percent>        (ops) chance for a royal-blooded player to be born the Founder (default 25)
  * Yarn: class_2168 ServerCommandSource, class_2170 CommandManager, class_2186 EntityArgumentType.
  */
 public final class MasteryCommand {
@@ -42,6 +44,10 @@ public final class MasteryCommand {
                                         .then(class_2170.method_9244("xp", IntegerArgumentType.integer(0))
                                                 .executes(c -> setXp(c, true))))))
                 .then(class_2170.method_9247("founding").requires(s -> s.method_9259(2))
+                        .then(class_2170.method_9247("release").executes(MasteryCommand::foundingRelease))
+                        .then(class_2170.method_9247("chance")
+                                .then(class_2170.method_9244("percent", IntegerArgumentType.integer(0, 100))
+                                        .executes(MasteryCommand::foundingChance)))
                         .then(class_2170.method_9244("players", class_2186.method_9308())
                                 .executes(MasteryCommand::founding)))
                 .then(class_2170.method_9247("fury").requires(s -> s.method_9259(2))
@@ -91,9 +97,27 @@ public final class MasteryCommand {
         Collection<class_3222> players = class_2186.method_9312(c, "players");
         // The Founding Titan has one holder at a time, so only the last player listed keeps it.
         for (class_3222 p : players) TitanHooks.runFunction(p, "founding:power/inherit");
-        c.getSource().method_9226(() -> class_2561.method_43470("Granted the Founding Titan. Hold the Coordinate: right-click Titan Form to shift, sneak + right-click to switch powers.")
+        c.getSource().method_9226(() -> class_2561.method_43470("Granted the Founding Titan. Press O to transform.")
                 .method_27692(class_124.field_1065), true);
         return players.size();
+    }
+
+    private static int foundingRelease(CommandContext<class_2168> c) {
+        var server = c.getSource().method_9211();
+        // Bumping the generation strips the power from whoever holds it (even offline) the next time they're seen.
+        server.method_3734().method_44252(c.getSource().method_9217().method_9206(2), "scoreboard players add #gen founding.g 1");
+        server.method_3734().method_44252(c.getSource().method_9217().method_9206(2), "scoreboard players set #claimed founding.cfg 0");
+        server.method_3734().method_44252(c.getSource().method_9217().method_9206(2), "tag @a remove " + titanmastery.founding.FounderManager.ROLLED_TAG);
+        c.getSource().method_9226(() -> class_2561.method_43470("The Founding Titan is unclaimed. A royal-blooded player may be born with it."), true);
+        return 1;
+    }
+
+    private static int foundingChance(CommandContext<class_2168> c) {
+        int pct = IntegerArgumentType.getInteger(c, "percent");
+        c.getSource().method_9211().method_3734().method_44252(c.getSource().method_9217().method_9206(2),
+                "scoreboard players set #chance founding.cfg " + pct);
+        c.getSource().method_9226(() -> class_2561.method_43470("Royal-blooded players now have a " + pct + "% chance to be born the Founder."), true);
+        return pct;
     }
 
     private static int fury(CommandContext<class_2168> c) throws CommandSyntaxException {

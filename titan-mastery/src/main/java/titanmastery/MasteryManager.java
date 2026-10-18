@@ -48,9 +48,8 @@ public final class MasteryManager {
 
     /** The server player shifted into this titan, if any. */
     public static class_3222 riderOf(class_1297 titan) {
-        if (titan instanceof class_3222 p) { // our Founding Titan is the player's own giant body
-            Session s = SESSIONS.get(p.method_5667());
-            return (s != null && s.titan == p) ? p : null;
+        if (titan instanceof titanmastery.founding.FoundingTitanEntity f) {
+            return f.getFounder() instanceof class_3222 p ? p : null;
         }
         if (!(titan instanceof ShifterTitan st) || st.getShifterUUID() == null) return null;
         MinecraftServer server = titan.method_5682();
@@ -63,14 +62,11 @@ public final class MasteryManager {
 
     public static void tick(MinecraftServer server) {
         long now = now(server);
-        for (class_3222 player : server.method_3760().method_14571()) { // getPlayerList
+        titanmastery.founding.FounderManager.tick(server, now);
+        for (class_3222 player : players(server)) {
             class_1297 titan = TitanHooks.shiftedTitan(player);
             Session s = SESSIONS.get(player.method_5667());
             TitanType type = titan == null ? null : TitanType.of(titan);
-            if (titan == null && TitanHooks.inFoundingForm(player)) {
-                titan = player;
-                type = TitanType.FOUNDING;
-            }
 
             if (s != null && (titan == null || s.titan != titan)) {
                 endSession(player, s);
@@ -90,6 +86,16 @@ public final class MasteryManager {
                 it.remove();
             }
         }
+    }
+
+    /** Online players, plus any simulated players a test harness registers. */
+    public static final List<class_3222> EXTRA_PLAYERS = new ArrayList<>();
+
+    public static List<class_3222> players(MinecraftServer server) {
+        if (EXTRA_PLAYERS.isEmpty()) return server.method_3760().method_14571(); // getPlayerList
+        List<class_3222> all = new ArrayList<>(server.method_3760().method_14571());
+        all.addAll(EXTRA_PLAYERS);
+        return all;
     }
 
     private static Session startSession(class_3222 player, class_1297 titan, TitanType type, long now) {
@@ -191,14 +197,14 @@ public final class MasteryManager {
     }
 
     private static void tickFury(class_3222 player, Session s, class_3218 world, long now) {
+        if (MasteryCombat.isCommanded(player)) return; // the Founder's command overrides even rage
         class_1297 target = TitanHooks.nearestTarget(s.titan, player, 48);
         if (target != null && s.shiftedTicks % 14 == 0) {
             double reach = s.titan.method_17681() * 0.5 + 9.0; // getWidth
             double dx = target.method_23317() - s.titan.method_23317();
             double dz = target.method_23321() - s.titan.method_23321();
             if (dx * dx + dz * dz <= reach * reach) {
-                if (s.titan == player) TitanHooks.playerTitanStrike(player, target);
-                else TitanHooks.attack(s.titan);
+                TitanHooks.attack(s.titan, target);
             }
         }
         if (s.shiftedTicks % 100 == 0 && player.method_59922().method_43057() < 0.35f) {
@@ -257,7 +263,7 @@ public final class MasteryManager {
         if (attacker == null) return;
 
         class_3222 player = null;
-        if (attacker instanceof ShifterTitan) {
+        if (attacker instanceof ShifterTitan || attacker instanceof titanmastery.founding.FoundingTitanEntity) {
             player = riderOf(attacker);
         } else if (attacker instanceof class_3222 p && session(p) != null) {
             player = p;

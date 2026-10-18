@@ -22,6 +22,8 @@ import titanmastery.TitanMastery;
 public class TitanMasteryClient implements ClientModInitializer {
     private static class_304 abilityKey;
     private static class_304 formKey;
+    private static class_304 foundingKey;
+    private static class_304 rumblingKey;
     private static float wanderYaw = 0f;
     private static int wanderTicks = 0;
 
@@ -32,10 +34,18 @@ public class TitanMasteryClient implements ClientModInitializer {
         formKey = KeyBindingHelper.registerKeyBinding(new class_304("key.titanmastery.form",
                 class_3675.class_307.field_1668, 85, "category.titanmastery")); // U
 
+        foundingKey = KeyBindingHelper.registerKeyBinding(new class_304("key.titanmastery.founding_shift",
+                class_3675.class_307.field_1668, 79, "category.titanmastery")); // O
+        rumblingKey = KeyBindingHelper.registerKeyBinding(new class_304("key.titanmastery.rumbling",
+                class_3675.class_307.field_1668, 80, "category.titanmastery")); // P
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(TitanMastery.FOUNDING_TITAN, FoundingTitanRenderer::new);
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             class_746 player = client.field_1724;
             while (abilityKey.method_1436()) send(player, MasteryAbilities.ACTION_ABILITY);
             while (formKey.method_1436()) send(player, MasteryAbilities.ACTION_FORM);
+            while (foundingKey.method_1436()) send(player, MasteryAbilities.ACTION_FOUNDING_SHIFT);
+            while (rumblingKey.method_1436()) send(player, MasteryAbilities.ACTION_RUMBLING);
             if (player != null) steerRage(player);
         });
     }
@@ -50,12 +60,12 @@ public class TitanMasteryClient implements ClientModInitializer {
     }
 
     private static boolean crystallized(class_746 player) {
-        return player.method_6059(TitanMastery.CRYSTALLIZED);
+        return player.method_6059(TitanMastery.CRYSTALLIZED) || player.method_6059(TitanMastery.COMMANDED);
     }
 
     /** While raging, the Titan turns toward whatever is nearest; your mouse can't hold it. */
     private static void steerRage(class_746 player) {
-        if (!raging(player)) return;
+        if (!raging(player) || player.method_6059(TitanMastery.COMMANDED)) return;
         class_1297 titan = TitanHooks.shiftedTitan(player);
         if (titan == null) titan = player; // giant Founding Titan Form
         class_1297 target = TitanHooks.nearestTarget(titan, player, 48);
@@ -81,7 +91,11 @@ public class TitanMasteryClient implements ClientModInitializer {
     public static void overrideInput(class_744 input) {
         class_746 player = class_310.method_1551().field_1724;
         if (player == null) return;
-        if (raging(player)) {
+        // The Founding Titan reads the jump key; sneaking is ignored inside it (O reverts instead).
+        boolean inFounding = player.method_5854() instanceof titanmastery.founding.FoundingTitanEntity;
+        titanmastery.founding.FoundingInput.jumping = inFounding && input.field_3904;
+        if (inFounding) input.field_3903 = false;
+        if (raging(player) && !player.method_6059(TitanMastery.COMMANDED)) {
             input.field_3905 = 1.0f;   // movementForward: always charging
             input.field_3907 = 0.0f;   // movementSideways
             input.field_3910 = true;   // pressingForward

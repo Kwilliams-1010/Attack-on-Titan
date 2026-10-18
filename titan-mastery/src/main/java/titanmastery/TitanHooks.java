@@ -13,7 +13,6 @@ import net.minecraft.class_1531;
 import net.minecraft.class_1657;
 import net.minecraft.class_238;
 import net.minecraft.class_243;
-import net.minecraft.class_1268;
 import net.minecraft.class_3222;
 
 import java.util.UUID;
@@ -31,11 +30,23 @@ public final class TitanHooks {
     /** The titan this player is currently shifted into, or null. */
     public static class_1297 shiftedTitan(class_1657 player) {
         class_1297 v = player.method_5854(); // getVehicle
+        if (v instanceof titanmastery.founding.FoundingTitanEntity f) {
+            return player.method_5667().equals(f.getOwner()) ? v : null;
+        }
         if (v instanceof ShifterTitan st) {
             UUID id = st.getShifterUUID();
             if (id != null && id.equals(player.method_5667())) return v; // getUuid
         }
         return null;
+    }
+
+    /** A punch at the target: Danny's titans swing at whatever is in front, the Founding Titan strikes the target. */
+    public static void attack(class_1297 titan, class_1297 target) {
+        if (titan instanceof titanmastery.founding.FoundingTitanEntity f) {
+            f.strike(target);
+            return;
+        }
+        attack(titan);
     }
 
     public static void attack(class_1297 titan) {
@@ -55,6 +66,10 @@ public final class TitanHooks {
     }
 
     public static void roar(class_1297 titan) {
+        if (titan instanceof titanmastery.founding.FoundingTitanEntity f) {
+            f.roar();
+            return;
+        }
         internal = true;
         try {
             if (titan instanceof AttackTitanEntity a) a.triggerRoar();
@@ -66,11 +81,6 @@ public final class TitanHooks {
         }
     }
 
-    /** Our Founding Titan: the player themself, grown giant by the bundled datapack ("Titan Form"). */
-    public static boolean inFoundingForm(class_1657 player) {
-        return player.method_5752().contains("founding.titan"); // getCommandTags (server side only)
-    }
-
     /** Runs a datapack function as this player, silently. */
     public static void runFunction(class_3222 player, String function) {
         var server = player.method_5682();
@@ -78,16 +88,10 @@ public final class TitanHooks {
         server.method_3734().method_44252(player.method_5671().method_9217().method_9206(2), "function " + function);
     }
 
-    /** A raging giant Founder throws a punch at whatever is in front of it. */
-    public static void playerTitanStrike(class_3222 player, class_1297 target) {
-        player.method_6104(class_1268.field_5808); // swingHand(MAIN_HAND)
-        player.method_7324(target);                // attack
-    }
-
     /** Forces the shifter out of the titan (used when a feral rampage burns out). */
     public static void forceRevert(class_1297 titan, class_1657 player) {
-        if (titan == player && player instanceof class_3222 sp) {
-            runFunction(sp, "founding:form/revert");
+        if (titan instanceof titanmastery.founding.FoundingTitanEntity && player instanceof class_3222 sp) {
+            titanmastery.founding.FounderManager.revert(sp, true);
             return;
         }
         internal = true;

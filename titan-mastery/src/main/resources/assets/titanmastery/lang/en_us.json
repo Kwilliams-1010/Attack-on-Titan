@@ -2,6 +2,10 @@
   "category.titanmastery": "Titan Mastery",
   "key.titanmastery.ability": "Mastery Ability",
   "key.titanmastery.form": "Mastery Form",
+  "key.titanmastery.founding_shift": "Founding Titan: Transform",
+  "key.titanmastery.rumbling": "Founding Titan: The Rumbling",
   "effect.titanmastery.titan_fury": "Titan Rage",
-  "effect.titanmastery.crystallized": "Crystallized"
+  "effect.titanmastery.crystallized": "Crystallized",
+  "entity.titanmastery.founding_titan": "Founding Titan",
+  "effect.titanmastery.commanded": "Commanded"
 }

@@ -69,7 +69,8 @@ public final class MasteryCombat {
 
     private static Session sessionOfAttacker(class_1297 attacker) {
         if (attacker == null) return null;
-        if (attacker instanceof ShifterTitan) return MasteryManager.session(MasteryManager.riderOf(attacker));
+        if (attacker instanceof ShifterTitan || attacker instanceof titanmastery.founding.FoundingTitanEntity)
+            return MasteryManager.session(MasteryManager.riderOf(attacker));
         if (attacker instanceof class_3222 p) return MasteryManager.session(p);
         return null;
     }
@@ -77,11 +78,19 @@ public final class MasteryCombat {
     // ------------------------------------------------------------------ gates for Danny's own controls
 
     /** True when the shifter tries to leave the Titan while it is raging. */
+    public static boolean isCommanded(class_1657 player) {
+        return player != null && player.method_6059(TitanMastery.COMMANDED);
+    }
+
     public static boolean blockRevert(class_1297 titan, class_1657 player) {
         if (TitanHooks.internal || player == null || player.method_37908().field_9236) return false;
         // Never trap anyone: a beaten, incapacitated or dying Titan always lets its shifter out.
         if (titan instanceof ShifterTitan st && st.isIncapacitated()) return false;
         if (titan instanceof class_1309 l && l.method_6032() <= l.method_6063() * 0.05f) return false;
+        if (isCommanded(player)) {
+            player.method_7353(class_2561.method_43470("The Founder's command holds you in place.").method_27692(class_124.field_1065), true);
+            return true;
+        }
         Session s = MasteryManager.session(player);
         if (s != null && s.inFury) {
             player.method_7353(class_2561.method_43470("The Titan won't let you go!").method_27692(class_124.field_1061), true);
@@ -93,7 +102,9 @@ public final class MasteryCombat {
     /** True when a manual punch should be ignored (raging, or sealed in the crystal cocoon). */
     public static boolean blockManualAttack(class_1297 titan) {
         if (TitanHooks.internal || titan.method_37908().field_9236) return false;
-        Session s = MasteryManager.session(MasteryManager.riderOf(titan));
+        class_3222 rider = MasteryManager.riderOf(titan);
+        if (isCommanded(rider)) return true;
+        Session s = MasteryManager.session(rider);
         if (s == null) return false;
         return s.inFury || (s.formActive && s.type == TitanType.FEMALE);
     }
@@ -102,6 +113,7 @@ public final class MasteryCombat {
     public static boolean blockManualAbility(class_1297 titan) {
         if (TitanHooks.internal || titan.method_37908().field_9236) return false;
         class_3222 rider = MasteryManager.riderOf(titan);
+        if (isCommanded(rider)) return true;
         Session s = MasteryManager.session(rider);
         if (s == null) return false;
         if (s.inFury) return true;

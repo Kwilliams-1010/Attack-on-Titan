@@ -53,6 +53,7 @@ public enum TitanType {
 
     /** Which of the nine a shifter titan entity is (subclasses are checked before AttackTitanEntity). */
     public static TitanType of(class_1297 e) {
+        if (e instanceof titanmastery.founding.FoundingTitanEntity) return FOUNDING;
         if (e instanceof FoundingTitanEntity) return FOUNDING;
         if (e instanceof CartShifterTitanEntity) return CART;
         if (e instanceof OgreShifterTitanEntity) return null;

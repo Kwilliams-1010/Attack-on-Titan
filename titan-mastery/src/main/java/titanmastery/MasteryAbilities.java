@@ -30,10 +30,20 @@ public final class MasteryAbilities {
 
     public static final int ACTION_ABILITY = 0;
     public static final int ACTION_FORM = 1;
+    public static final int ACTION_FOUNDING_SHIFT = 2;
+    public static final int ACTION_RUMBLING = 3;
 
     // ------------------------------------------------------------------ input from the client
 
     public static void handle(class_3222 player, int action) {
+        if (MasteryCombat.isCommanded(player)) {
+            player.method_7353(class_2561.method_43470("The Founder's command holds you in place.").method_27692(class_124.field_1065), true);
+            return;
+        }
+        if (action == ACTION_FOUNDING_SHIFT) {
+            titanmastery.founding.FounderManager.toggleShift(player);
+            return;
+        }
         Session s = MasteryManager.session(player);
         if (s == null) return;
         long now = MasteryManager.now(player.method_5682());
@@ -42,7 +52,8 @@ public final class MasteryAbilities {
             deny(player, s, now, "The rage won't listen.");
             return;
         }
-        if (action == ACTION_ABILITY) useAbility(player, s, now);
+        if (action == ACTION_RUMBLING) rumbling(player, s, now);
+        else if (action == ACTION_ABILITY) useAbility(player, s, now);
         else if (action == ACTION_FORM) toggleForm(player, s, now);
     }
 
@@ -75,6 +86,16 @@ public final class MasteryAbilities {
             case FOUNDING -> coordinate(player, world, titan, now);
         }
         player.method_7353(class_2561.method_43470(s.type.abilityName + "!").method_54663(s.type.color).method_27692(class_124.field_1067), true);
+    }
+
+    /** P: the Founding Titan's ultimate. Runs the bundled datapack's Rumbling (which keeps its own 5-minute recharge). */
+    private static void rumbling(class_3222 player, Session s, long now) {
+        if (s.type != TitanType.FOUNDING) return;
+        if (s.stage < 4) {
+            deny(player, s, now, "The Rumbling unlocks at Mastered (" + Mastery.THRESHOLDS[4] + " XP).");
+            return;
+        }
+        TitanHooks.runFunction(player, "founding:rumbling/try");
     }
 
     private static void toggleForm(class_3222 player, Session s, long now) {
@@ -267,7 +288,35 @@ public final class MasteryAbilities {
         sound(world, titan, class_3417.field_14733, 3f, 1.3f);
     }
 
+    /**
+     * J for the Founder. Every Subject of Ymir obeys: within 96 blocks all titans stop where they stand.
+     * Pure titans and other mobs freeze; shifters inside their Titans are Commanded (can't move, punch,
+     * use abilities or revert). 10 seconds, 15 at Perfected.
+     */
     private static void coordinate(class_3222 player, class_3218 world, class_1297 titan, long now) {
+        Session s = MasteryManager.session(player);
+        int ticks = (s != null && s.stage >= 5) ? 300 : 200;
+        int stopped = 0;
+        for (class_1297 e : world.method_8335(titan, titan.method_5829().method_1014(96))) { // getOtherEntities
+            class_3222 rider = MasteryManager.riderOf(e);
+            if (rider != null && rider != player) {
+                rider.method_6092(new class_1293(TitanMastery.COMMANDED, ticks, 0, false, false, true));
+                rider.method_7353(class_2561.method_43470("The Founder commands you. Your Titan won't move.")
+                        .method_27692(class_124.field_1065).method_27692(class_124.field_1067), true);
+                if (e instanceof class_1309 l) l.method_6092(new class_1293(class_1294.field_5912, ticks, 0, false, false));
+                world.method_14199(class_2398.field_11207, e.method_23317(), e.method_23318() + e.method_17682() * 0.6, e.method_23321(),
+                        60, e.method_17681() * 0.5, e.method_17682() * 0.4, e.method_17681() * 0.5, 0.05);
+                stopped++;
+            } else if (e instanceof class_1308 mob && e.getClass().getName().startsWith("daot.") && !TitanHooks.isTitanPart(e)
+                    && !(e instanceof ShifterTitan) && mob.method_5805()) {
+                MasteryManager.freeze(mob, now + ticks); // pure titans, from further away than ordinary mobs
+                mob.method_6092(new class_1293(class_1294.field_5912, ticks, 0, false, false));
+                stopped++;
+            }
+        }
+        if (stopped > 0) {
+            player.method_7353(class_2561.method_43470("Coordinate: " + stopped + " titan(s) stopped.").method_27692(class_124.field_1065), false);
+        }
         class_238 box = titan.method_5829().method_1014(64);
         for (class_1308 mob : world.method_8390(class_1308.class, box,
                 m -> m != titan && !(m instanceof ShifterTitan) && !TitanHooks.isTitanPart(m) && m.method_5805())) {

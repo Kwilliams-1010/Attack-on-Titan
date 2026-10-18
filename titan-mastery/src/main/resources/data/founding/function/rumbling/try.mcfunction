@@ -1,6 +1,6 @@
 # The Rumbling - awaken 7 Wall Titans that march in the direction you face for 60 seconds
 
-execute if score @s founding.cd_rumble > #now founding.t run return run function founding:use/not_ready
+execute if score @s founding.cd_rumble > #now founding.t run return run title @s actionbar {"text":"The Rumbling is still recharging.","color":"red"}
 execute if entity @e[type=minecraft:giant,tag=founding.wall] run return run tellraw @s {"text":"The Rumbling is already underway.","color":"red"}
 
 execute rotated ~ 0 positioned ^ ^ ^24 run function founding:rumbling/summon_line
