@@ -1,0 +1,18 @@
+{
+  "criteria": {
+    "drink": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": "minecraft:honey_bottle",
+          "predicates": {
+            "minecraft:custom_data": "{founding_serum:1b}"
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "founding:power/inherit"
+  }
+}

@@ -1,0 +1,12 @@
+# Gradle / IDE
+.gradle/
+build/
+out/
+run/
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

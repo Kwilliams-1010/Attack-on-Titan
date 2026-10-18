@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "titanmastery.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "LivingEntityDamageMixin",
+    "ShifterTitanMixin",
+    "ShifterAbilityMixin",
+    "CartAttackMixin"
+  ],
+  "client": [
+    "client.KeyboardInputMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

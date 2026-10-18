@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "titanmastery",
+  "version": "${version}",
+  "name": "Titan Mastery",
+  "description": "Addon for Danny's AoT. New shifters can't control their Titan: it rages on its own. Each Titan you use levels up through six stages of control, unlocking a unique mastery ability and form for all nine Titans.",
+  "authors": ["KadenCraft1"],
+  "license": "All-Rights-Reserved",
+  "icon": "assets/titanmastery/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["titanmastery.TitanMastery"],
+    "client": ["titanmastery.client.TitanMasteryClient"]
+  },
+  "mixins": ["titanmastery.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "dannys-aot": "*"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "pack": {
+    "pack_format": 48,
+    "description": [
+      {"text": "Founding Titan", "color": "gold", "bold": true},
+      {"text": "\nThe ninth Titan, for Danny's AOT (MC 1.21.1)", "color": "gray"}
+    ]
+  }
+}
