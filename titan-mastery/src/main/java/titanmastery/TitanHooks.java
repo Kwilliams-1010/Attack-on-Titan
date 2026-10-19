@@ -112,9 +112,11 @@ public final class TitanHooks {
     /** Danny's titans are built from several helper entities (nape, eyes, grab box, legs). Never target those. */
     public static boolean isTitanPart(class_1297 e) {
         String n = e.getClass().getName();
-        if (!n.startsWith("daot.")) return false;
-        return n.contains("Nape") || n.contains("Eye") || n.contains("Grab") || n.contains("Leg")
-                || n.contains("Hitbox") || n.contains("Shell") || n.contains("Rig");
+        if (!n.startsWith("daot.") && !n.startsWith("net.springdaot.")) return false;
+        String simple = e.getClass().getSimpleName();
+        return simple.contains("Nape") || simple.contains("Eye") || simple.contains("Grab") || simple.contains("Leg")
+                || simple.contains("Hitbox") || simple.contains("Shell") || simple.contains("Rig")
+                || simple.contains("HandEntity") || simple.contains("Seat");
     }
 
     /** Something a raging or attacking titan may hit. */

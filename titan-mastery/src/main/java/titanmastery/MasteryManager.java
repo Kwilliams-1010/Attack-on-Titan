@@ -108,7 +108,11 @@ public final class MasteryManager {
 
         player.method_7353(Mastery.progressText(player, type), true);
 
+        if (springFrenzy(player)) return s; // SpringDAOT is already running its own first-transformation frenzy
         float roll = player.method_59922().method_43057(); // getRandom().nextFloat()
+        boolean springFrenzy = player.method_5752().contains("springdaot_uncontrolled_first_transform")
+                || titan.method_5752().contains("springdaot_uncontrolled_first_transform");
+        if (springFrenzy) return s; // SpringDAOT's own first-transformation frenzy is already in control
         switch (s.stage) {
             case 0 -> startFury(player, s, 30 * 20, true, now);
             case 1 -> { if (roll < 0.40f) startFury(player, s, 12 * 20, false, now); }
@@ -173,7 +177,19 @@ public final class MasteryManager {
 
     // ------------------------------------------------------------------ fury
 
+    /** True while SpringDAOT's own "uncontrolled first transformation" frenzy has this player. */
+    public static boolean springFrenzy(class_3222 player) {
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("springdaot")) return false;
+        try {
+            Class<?> c = Class.forName("net.springdaot.handler.FirstTransformationHandler");
+            return (boolean) c.getMethod("isUncontrolled", net.minecraft.class_1657.class).invoke(null, player);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     public static void startFury(class_3222 player, Session s, int ticks, boolean feral, long now) {
+        if (springFrenzy(player)) return;
         s.inFury = true;
         s.feralFury = feral;
         s.furyEnd = now + ticks;
@@ -258,6 +274,8 @@ public final class MasteryManager {
 
     public static void onDeath(class_1309 victim, class_1282 source) {
         if (victim.method_37908().field_9236) return; // isClient
+        if (TitanHooks.isTitanPart(victim) || victim.getClass().getName().contains("Nape")
+                || victim.getClass().getName().contains("Hitbox")) return; // a Titan's own hitbox pieces aren't kills
         class_1297 attacker = source.method_5529();
         if (attacker == null) attacker = source.method_5526();
         if (attacker == null) return;
@@ -272,7 +290,13 @@ public final class MasteryManager {
         Session s = session(player);
         if (s == null) return;
 
+        if (TitanHooks.isTitanPart(victim) || victim == s.titan) return; // hitbox pieces aren't kills
         int xp = (victim instanceof class_1657 || victim instanceof ShifterTitan) ? 40 : 10;
+        long now = now(player.method_5682());
+        if (now - s.killWindowStart >= 200) { s.killWindowStart = now; s.killXpInWindow = 0; }
+        xp = Math.min(xp, 80 - s.killXpInWindow); // at most 80 kill XP every 10 seconds
+        if (xp <= 0) return;
+        s.killXpInWindow += xp;
         Mastery.addXp(player, s.type, xp);
     }
 }

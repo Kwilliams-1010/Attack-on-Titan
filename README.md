@@ -66,12 +66,13 @@ Every stage also adds ~8% damage dealt, ~5% damage resisted, and Titan regenerat
 
 ### The Founding Titan
 
-Danny's AoT has a Founding Titan, but its code only lets his dev team grant it. This pack adds its own, built into Titan Mastery:
+Danny's AoT has a Founding Titan, but its code only lets his dev team grant it. Titan Mastery adds its own:
 
-- **Get it:** craft a **Founding Titan Serum** (Totem of Undying on top; Echo Shard, Nether Star, Echo Shard across the middle; Honey Bottle at the bottom). It's in your recipe book. Drink it. Ops can use `/mastery founding <player>` instead.
-- **Use it:** hold **the Coordinate**. Right-click uses the selected power, sneak + right-click switches: **Titan Form** (you grow into a 22-block Titan), **Kneel** (freeze every mob within 64 blocks) and **The Rumbling** (Wall Titans march where you face).
-- **Mastery:** Titan Form counts as shifting. It earns Founding mastery, rages when you're Feral, and unlocks **Coordinate (J)** and **Paths of Ymir (U)**.
-- Only one Founder at a time. When the Founder dies, the serum drops where they fell.
+- **Born with it:** a player with royal blood has a 25% chance to be born the Founder, if nobody holds it. Only one Founder exists. When they die, a serum drops where they fell; drinking it passes the power on. Ops: `/mastery founding <player>`, `/mastery founding release`, `/mastery founding chance <0-100>`.
+- **Transform with O**, like any shifter. With **SpringDAOT** installed you become its 70-block **Ymir Founding Titan** through Danny's own shift; without it (or with `/mastery founding model original`, or as a Marleyan, whom Danny never grants Titan powers) you become Titan Mastery's own 20-block Founding Titan.
+- **Powers** (unlocked by Founding mastery): **J Coordinate** stops every titan and shifter within 96 blocks (Commanded: no moving, punching, abilities or reverting) and freezes pure titans; **U Paths of Ymir** heals and strengthens everyone near you; **P The Rumbling** sends Wall Titans marching where you face.
+- **Rage:** a new Founder's Titan runs wild until mastery grows. With SpringDAOT, its own "uncontrolled first transformation" game rule is switched off once per world so the two don't stack (`/gamerule uncontrolledFirstTransformation true` brings it back).
+- All keys can be rebound in *Options → Controls → Key Binds → Titan Mastery*.
 Mastery XP is stored in scoreboard objectives `tm_attack`, `tm_colossal`, … so it saves with the world.
 
 ### Building from source

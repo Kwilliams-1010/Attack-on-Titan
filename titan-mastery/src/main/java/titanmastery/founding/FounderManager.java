@@ -97,7 +97,7 @@ public final class FounderManager {
         }
 
         class_3218 world = player.method_51469();
-        if (useSpringYmir(player.method_5682()) && shiftIntoSpringYmir(player, world)) return;
+        if (useSpringYmir(player.method_5682()) && shiftThroughDanny(player, world)) return;
         FoundingTitanEntity titan = TitanMastery.FOUNDING_TITAN.method_5883(world); // EntityType.create
         if (titan == null) return;
         titan.method_5808(player.method_23317(), player.method_23318(), player.method_23321(), player.method_36454(), 0f); // refreshPositionAndAngles
@@ -139,20 +139,55 @@ public final class FounderManager {
                 class_3417.field_14865, class_3419.field_15248, 8.0f, 0.7f); // lightning thunder
     }
 
-    /** SpringDAOT's Ymir Founding Titan, spawned the same way Danny's own shifting does it. */
-    private static boolean shiftIntoSpringYmir(class_3222 player, class_3218 world) {
-        try {
-            class_1297 e = net.minecraft.class_7923.field_41177.method_10223(SPRING_YMIR).method_5883(world);
-            if (!(e instanceof daot.AttackTitanEntity ymir)) return false;
-            ymir.method_5808(player.method_23317(), player.method_23318(), player.method_23321(), player.method_36454(), 0f);
-            world.method_8649(ymir);
-            ymir.onPlayerShift(player);
-            if (TitanHooks.shiftedTitan(player) == ymir) return true;
-            ymir.method_31472();
-        } catch (Throwable t) {
-            TitanMastery.LOG.warn("Couldn't shift into SpringDAOT's Ymir Founding Titan, using the Titan Mastery model instead", t);
+    /** SpringDAOT's Ymir power, granted through Danny's own shifter system so his records back it. */
+    public static final String SPRING_TAG = "ymirfounding";
+    private static final String GRANTED_TAG = "tm_granted_ymir";
+    private static java.lang.reflect.Method dannyShift;
+
+    static void serverCommand(MinecraftServer server, String command) {
+        server.method_3734().method_44252(server.method_3739().method_9217().method_9206(4), command);
+    }
+
+    /** Keeps SpringDAOT's Ymir power in step with who holds the Founding Titan. */
+    static void syncSpringPower(class_3222 player) {
+        MinecraftServer server = player.method_5682();
+        String name = player.method_7334().getName();
+        java.util.Set<String> tags = player.method_5752();
+        if (isFounder(player) && useSpringYmir(server)) {
+            if (!tags.contains(SPRING_TAG)) {
+                player.method_5780(GRANTED_TAG); // mark first: Danny applies the tag a moment after the command
+                serverCommand(server, "daot shifter set " + name + " " + SPRING_TAG);
+            }
+        } else if (tags.contains(GRANTED_TAG)) {
+            // Only take back what we gave: a Ymir power SpringDAOT granted on its own is left alone.
+            player.method_5738(GRANTED_TAG);
+            if (tags.contains(SPRING_TAG)) serverCommand(server, "daot shifter remove " + name + " " + SPRING_TAG);
         }
-        return false;
+    }
+
+    /** Runs Danny's own shift (the B key), which SpringDAOT extends with the Ymir form. */
+    private static boolean shiftThroughDanny(class_3222 player, class_3218 world) {
+        syncSpringPower(player);
+        if (!player.method_5752().contains(SPRING_TAG)) return false;
+        return runDannyShift(player);
+    }
+
+    /** Danny's B-key handler: shifts in when human, starts the dismount when shifted. */
+    private static boolean runDannyShift(class_3222 player) {
+        try {
+            if (dannyShift == null) {
+                dannyShift = daot.network.ModNetworking.class.getDeclaredMethod("handleTitanShift", class_3222.class, class_3218.class);
+                dannyShift.setAccessible(true);
+            }
+            TitanHooks.internal = true; // our own revert gate already ran
+            dannyShift.invoke(null, player, player.method_51469());
+            return true;
+        } catch (Throwable t) {
+            TitanMastery.LOG.warn("Couldn't run Danny's shift handler for SpringDAOT's Ymir", t);
+            return false;
+        } finally {
+            TitanHooks.internal = false;
+        }
     }
 
     /** Leave the Titan. {@code forced} skips the rage check (rage burning out, power lost). */
@@ -168,7 +203,8 @@ public final class FounderManager {
             if (titanmastery.MasteryCombat.isCommanded(player)) return;
         }
         if (!(body instanceof FoundingTitanEntity titan)) {
-            TitanHooks.forceRevert(body, player); // SpringDAOT's Ymir leaves through Danny's own dismount
+            // SpringDAOT's Ymir: revert exactly like Danny's B key (his handler starts the dismount and its checks)
+            if (!runDannyShift(player)) TitanHooks.forceRevert(body, player);
             return;
         }
         player.method_5848(); // stopRiding
@@ -207,12 +243,28 @@ public final class FounderManager {
 
     // ------------------------------------------------------------------ every tick
 
+    /**
+     * SpringDAOT has its own "uncontrolled first transformation" (a dark frenzy overlay that also blocks reverting).
+     * Titan Mastery's rage covers the same idea, tied to mastery, so it's switched off once per world.
+     * Turning it back on with /gamerule is respected: this never runs twice in the same world.
+     */
+    private static void handOverFirstTransformation(MinecraftServer server) {
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("springdaot")) return;
+        if (server.method_3845().method_1170("founding.cfg") == null || cfg(server, "#spring_frenzy_handled") != 0) return;
+        serverCommand(server, "gamerule uncontrolledFirstTransformation false");
+        serverCommand(server, "scoreboard players set #spring_frenzy_handled founding.cfg 1");
+        TitanMastery.LOG.info("SpringDAOT's uncontrolled first transformation turned off; Titan Mastery's rage handles it.");
+    }
+
     public static void tick(MinecraftServer server, long now) {
+        if (now % 20 == 0) handOverFirstTransformation(server);
         for (class_3222 player : MasteryManager.players(server)) {
-            class_1297 body = founderBody(player);
-            if (body != null && !(body instanceof FoundingTitanEntity)) {
-                if (!isFounder(player) && !player.method_5752().contains("ymirfounding")) revert(player, true);
+            class_1297 springBody = founderBody(player);
+            if (springBody != null && !(springBody instanceof FoundingTitanEntity) && !isFounder(player)
+                    && player.method_5752().contains(GRANTED_TAG)) {
+                revert(player, true); // the Founding Titan passed to someone else
             }
+            if (now % 20 == 0) syncSpringPower(player);
             FoundingTitanEntity titan = titanOf(player);
             if (titan != null) {
                 if (!isFounder(player)) revert(player, true); // the power passed to someone else

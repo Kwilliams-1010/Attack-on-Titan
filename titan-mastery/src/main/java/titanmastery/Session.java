@@ -27,6 +27,10 @@ public final class Session {
     public long formEnd;
     public int burstShotsLeft;
 
+    // Kill XP rate limit
+    public long killWindowStart;
+    public int killXpInWindow;
+
     // Throttle for "you can't do that yet" messages
     public long lastDeniedMessage;
 

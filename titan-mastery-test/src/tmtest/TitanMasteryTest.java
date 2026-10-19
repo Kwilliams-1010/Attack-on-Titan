@@ -44,7 +44,7 @@ public class TitanMasteryTest implements ModInitializer {
     static class_1308 pigRef;
     static double pureX, pureZ;
     static int pureAge;
-    static class_3222 ymirFounder;
+    static class_3222 ymirFounder, heirRef, marley;
     static boolean pig() { return pigRef != null && pigRef.method_5987(); }
 
     record Step(int delay, String name, Consumer<MinecraftServer> body) {}
@@ -126,6 +126,7 @@ public class TitanMasteryTest implements ModInitializer {
 
         step(0, "royal birth", s -> {
             cmd("mastery founding chance 100");
+            cmd("mastery founding model original"); // core tests use the Titan Mastery body
             founder = fake("Tester");
             BloodlineData.get(s).setBloodline(founder.method_5667(), BloodlineType.ROYAL);
             FounderManager.rollBloodline(founder);
@@ -275,33 +276,57 @@ public class TitanMasteryTest implements ModInitializer {
 
         if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("springdaot")) {
             step(0, "ymir setup", s -> {
+                cmd("mastery founding model springdaot");
                 ymirFounder = fake("YmirFounder");
+                BloodlineData.get(s).setBloodline(ymirFounder.method_5667(), BloodlineType.ROYAL); // Danny won't give titans to Marleyans
                 TitanHooks.runFunction(ymirFounder, "founding:power/inherit");
                 Mastery.setXp(ymirFounder, TitanType.FOUNDING, 6000);
             });
-            step(70, "ymir shift", s -> {
-                check("SpringDAOT is used for the Founder's body", FounderManager.useSpringYmir(s), "");
-                FounderManager.toggleShift(ymirFounder);
-            });
-            step(5, "ymir body", s -> {
+            step(70, "ymir grant", s -> check("the Founder is given SpringDAOT's Ymir power through Danny's system",
+                    ymirFounder.method_5752().contains("ymirfounding"), String.valueOf(ymirFounder.method_5752())));
+            step(0, "ymir shift", s -> FounderManager.toggleShift(ymirFounder));
+            step(100, "ymir body", s -> {
                 class_1297 body = FounderManager.founderBody(ymirFounder);
-                check("O transforms the Founder into SpringDAOT's Ymir Founding Titan",
-                        body != null && body.getClass().getName().contains("Ymir"), body == null ? "none" : body.getClass().getName());
+                check("O runs Danny's real shift into SpringDAOT's Ymir (lifted to the nape, invisible)",
+                        body != null && body.getClass().getSimpleName().contains("Ymir") && ymirFounder.method_5767()
+                                && ymirFounder.method_23318() > spawn.method_10264() + 15,
+                        (body == null ? "none" : body.getClass().getSimpleName()) + " y=" + (int) ymirFounder.method_23318());
                 Session ses = MasteryManager.session(ymirFounder);
                 check("mastery treats SpringDAOT's Ymir as the Founding Titan", ses != null && ses.type == TitanType.FOUNDING,
                         ses == null ? "no session" : ses.type.toString());
                 MasteryAbilities.handle(ymirFounder, MasteryAbilities.ACTION_ABILITY);
                 check("J Coordinate works from the Ymir Titan",
                         ses != null && ses.abilityReadyAt.getOrDefault(TitanType.FOUNDING, 0L) > MasteryManager.now(s), "");
-                if (body != null) {
-                    float hp = ((class_1309) body).method_6032();
-                    ((class_1309) body).method_5643(world.method_48963().method_48830(), 20f);
-                    check("the Ymir Titan takes damage through our hooks", ((class_1309) body).method_6032() < hp, hp + "->" + ((class_1309) body).method_6032());
-                }
-                MasteryAbilities.handle(ymirFounder, MasteryAbilities.ACTION_FOUNDING_SHIFT);
             });
-            step(60, "ymir revert", s -> check("O reverts out of the Ymir Titan", FounderManager.founderBody(ymirFounder) == null
-                    && ymirFounder.method_5854() == null, String.valueOf(ymirFounder.method_5854())));
+            step(160, "ymir revert press", s -> {
+                class_1297 body = FounderManager.founderBody(ymirFounder);
+                MasteryAbilities.handle(ymirFounder, MasteryAbilities.ACTION_FOUNDING_SHIFT);
+                boolean dismounting = body instanceof daot.ShifterTitan st && st.isDismounting();
+                check("O starts Danny's dismount for the Ymir Titan (same as his B key)",
+                        dismounting || FounderManager.founderBody(ymirFounder) == null,
+                        body == null ? "no body" : "dismounting=" + dismounting
+                                + " cooldown=" + ((daot.AttackTitanEntity) body).isDismountToggleOnCooldown()
+                                + " knocked=" + ((daot.AttackTitanEntity) body).isKnocked()
+                                + " incap=" + ((daot.AttackTitanEntity) body).isIncapacitated());
+            });
+            // Danny finishes the dismount together with the player's client; a headless server can only check it starts.
+            step(0, "ymir handoff", s -> {
+                class_3222 heir = fake("Heir");
+                BloodlineData.get(s).setBloodline(heir.method_5667(), BloodlineType.ELDIAN);
+                TitanHooks.runFunction(heir, "founding:power/inherit"); // power moves to someone else
+                heirRef = heir;
+            });
+            step(70, "ymir handoff result", s -> check("when the Founding Titan passes on, the Ymir power moves with it",
+                    !ymirFounder.method_5752().contains("ymirfounding") && heirRef.method_5752().contains("ymirfounding"),
+                    "old=" + ymirFounder.method_5752() + " new=" + heirRef.method_5752()));
+            step(0, "marleyan founder", s -> {
+                marley = fake("Marley");
+                BloodlineData.get(s).setBloodline(marley.method_5667(), BloodlineType.MARLEYAN);
+                TitanHooks.runFunction(marley, "founding:power/inherit");
+            });
+            step(70, "marleyan shift", s -> FounderManager.toggleShift(marley));
+            step(5, "marleyan body", s -> check("a Marleyan Founder (Danny forbids them Titan powers) still transforms, into the Titan Mastery body",
+                    FounderManager.titanOf(marley) != null, String.valueOf(marley.method_5854())));
         }
 
         // Danny's AoT still behaves with our hooks in place
