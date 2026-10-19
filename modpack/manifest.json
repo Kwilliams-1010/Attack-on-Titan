@@ -12,7 +12,7 @@
   "manifestType": "minecraftModpack",
   "manifestVersion": 1,
   "name": "Attack on Titan: Beyond the Walls",
-  "version": "1.2.0",
+  "version": "2.0.1",
   "author": "KadenCraft1",
   "files": [
     {
@@ -73,6 +73,21 @@
     {
       "projectID": 238222,
       "fileID": 9205120,
+      "required": true
+    },
+    {
+      "projectID": 1598695,
+      "fileID": 9243928,
+      "required": true
+    },
+    {
+      "projectID": 319596,
+      "fileID": 5419266,
+      "required": true
+    },
+    {
+      "projectID": 658587,
+      "fileID": 7389821,
       "required": true
     }
   ],

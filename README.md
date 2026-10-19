@@ -7,11 +7,11 @@ An Attack on Titan modpack for **Minecraft 1.21.1 (Fabric)**, built around [Dann
 | [`titan-mastery/`](titan-mastery) | **Titan Mastery**, a Fabric add-on mod for Danny's AoT. New shifters can't control their Titan and it rages on its own; control grows the more you use each Titan, unlocking a mastery ability and form for all nine. |
 | [`founding-titan-datapack/`](founding-titan-datapack) | **Founding Titan** datapack: the Coordinate, Titan Form, Kneel and the Rumbling. |
 | [`modpack/`](modpack) | The CurseForge modpack manifest. |
-| [`releases/`](releases) | Ready-to-use files: **`AttackOnTitan-BeyondTheWalls-1.2.0.zip`** (the modpack), `titanmastery-1.2.0.jar`, and the standalone `founding-titan.zip`. |
+| [`releases/`](releases) | Ready-to-use files: **`AttackOnTitan-BeyondTheWalls-2.0.1.zip`** (the modpack), `titanmastery-2.0.1.jar`, and the standalone `founding-titan.zip`. |
 
 ## Install (one click, CurseForge app)
 
-1. Download [`releases/AttackOnTitan-BeyondTheWalls-1.2.0.zip`](releases/AttackOnTitan-BeyondTheWalls-1.2.0.zip).
+1. Download [`releases/AttackOnTitan-BeyondTheWalls-2.0.1.zip`](releases/AttackOnTitan-BeyondTheWalls-2.0.1.zip).
 2. In CurseForge: **Minecraft → Create Custom Profile → Import** → pick the zip.
 3. Set memory to **6–8 GB** (**Settings → Minecraft → Java Settings**) and play.
 
